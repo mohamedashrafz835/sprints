@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  web:
+    image: nginx:latest
+    ports:
+      - "8080:80"
+    networks:
+      - my_bridge
+    depends_on:
+      - db
+
+  db:
+    image: mongo:latest
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - my_bridge
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  mongo_data:
+
+networks:
+  my_bridge:
+    driver: bridge
